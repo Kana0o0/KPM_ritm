@@ -67,5 +67,5 @@
 Большое спасибо за внимание!  
 ---  
 
-![Snake animation](https://github.com/24Squirrel04/24Squirrel04/blob/output/github-contribution-grid-snake.svg)
+![Snake animation](https://github.com/Kana0o0/Kana0o0/blob/output/github-contribution-grid-snake.svg)
 

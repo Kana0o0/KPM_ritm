@@ -1,4 +1,4 @@
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=200&size=25&pause=1000&color=59F71D&random=false&width=435&lines=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5+%D0%BA%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F+%D0%9A%D0%9F%D0%9C+%D0%A0%D0%B8%D1%82%D0%BC.;%D0%94%D0%B0%D0%B2%D0%B0%D0%B9%D1%82%D0%B5+%D0%BD%D0%B0%D1%87%D0%BD%D1%91%D0%BC!)](https://git.io/typing-svg)  
+
 Тут будет описана инструкция по запуску фреймворка для тетсировния api n-point на ресурсе [Reqres](https://reqres.in/).  
 
 Для понимания концепции работы с данным фреймворком мы будем подразумевать следующие условия:  

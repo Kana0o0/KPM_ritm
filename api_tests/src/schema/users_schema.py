@@ -28,7 +28,7 @@ class Support(BaseModel):
             raise ValueError('Url dose not found')
 
 
-class Users(BaseModel):
+class UsersList(BaseModel):
     page: int = Field(le=2)
     per_page: int = Field(le=6)
     total: int = Field(le=12)

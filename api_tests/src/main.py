@@ -1,13 +1,7 @@
 import pytest
 
-from src.baseclasses.request import OpenPage
 from src.baseclasses.validate import Validate, CheckStatusCode
-from src.schema.users_schema import Users
-from src.schema.single_user import Users as Single_User
-from src.schema.user_created import UserCreated
-from src.schema.update_user import UserUpdated
-from src.builders.user import User
-from src.builders.link import Link
+from src.configuration.parametrs import User
 
 
 class TestPositiveAPI:
@@ -15,127 +9,116 @@ class TestPositiveAPI:
 
     @pytest.mark.pass_test
     @pytest.mark.positive
-    def test_create_user(self):
-        """ Функция запуска теста для проверки создания пользователя """
-        Validate(OpenPage(Link().build(), User().build()).post_response()).validate(model=UserCreated)
-        CheckStatusCode(OpenPage(Link().build(), User().build()).post_response()).assert_status_code(201)
-
-    @pytest.mark.pass_test
-    @pytest.mark.positive
-    def test_update_user_by_put(self):
-        """ Функция запуска теста для проверки обновления пользователя через метод put """
-        Validate(OpenPage(Link().add_user('3').build(), User().build()).put_response()).validate(model=UserUpdated)
-        CheckStatusCode(OpenPage(Link().add_user('3').build(), User().build()).put_response()).assert_status_code(200)
-
-    @pytest.mark.pass_test
-    @pytest.mark.positive
-    def test_update_user_by_patch(self):
-        """ Функция запуска теста для проверки обновления пользователя через метод patch """
-        Validate(OpenPage(Link().add_user('2').build(), User().build()).patch_response()).validate(model=UserUpdated)
-        CheckStatusCode(OpenPage(Link().add_user('2').build(), User().build()).patch_response()).assert_status_code(200)
-
-    @pytest.mark.pass_test
-    @pytest.mark.positive
-    @pytest.mark.data(Link().add_user('2').build())  # Маркер data используется для передачи параметра в фикстуру
+    @pytest.mark.parametrize('get_response', [{'param': User(), 'type': 'positive'}], indirect=True)
     def test_get_single_user(self, get_response):
-        """ Функция запуска теста для проверки получения одного пользователя """
-        Validate(get_response).validate(model=Single_User)
-        CheckStatusCode(get_response).assert_status_code(200)
+        #  Функция создания позитивного get запроса
+        Validate(response=get_response,
+                 model=User.MODEL['get']).validate()
+        CheckStatusCode(response=get_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['get']).assert_status_code()
 
     @pytest.mark.pass_test
     @pytest.mark.positive
-    @pytest.mark.data(Link().add_param('page', '2').build())
-    def test_get_users_list(self, get_response):
-        """ Функция запуска теста для проверки получения списка пользователей """
-        Validate(get_response).validate(model=Users)
-        CheckStatusCode(get_response).assert_status_code(200)
+    @pytest.mark.parametrize('get_list_response', [{'param': User(), 'type': 'positive'}], indirect=True)
+    def test_get_list_user(self, get_list_response):
+        #  Функция создания позитивного get_list запроса
+        Validate(response=get_list_response,
+                 model=User.MODEL['get_list']).validate()
+        CheckStatusCode(response=get_list_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['get']).assert_status_code()
 
     @pytest.mark.pass_test
     @pytest.mark.positive
-    @pytest.mark.data(Link().add_user('2').build())
+    @pytest.mark.parametrize('delete_response', [{'param': User(), 'type': 'positive'}], indirect=True)
     def test_delete_user(self, delete_response):
-        """ Функция запуска теста для проверки удаления пользователя """
-        CheckStatusCode(delete_response).assert_status_code(204)
+        #  Функция создания позитивного delete запроса
+        CheckStatusCode(response=delete_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['delete']).assert_status_code()
+
+    @pytest.mark.pass_test
+    @pytest.mark.positive
+    @pytest.mark.parametrize('post_response', [{'param': User(), 'type': 'positive'}], indirect=True)
+    def test_post_user(self, post_response):
+        #  Функция создания позитивного post запроса
+        Validate(response=post_response,
+                 model=User.MODEL['post']).validate()
+        CheckStatusCode(response=post_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['post']).assert_status_code()
+
+    @pytest.mark.pass_test
+    @pytest.mark.positive
+    @pytest.mark.parametrize('put_response', [{'param': User(), 'type': 'positive'}], indirect=True)
+    def test_put_user(self, put_response):
+        #  Функция создания позитивного put запроса
+        Validate(response=put_response,
+                 model=User.MODEL['put']).validate()
+        CheckStatusCode(response=put_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['put']).assert_status_code()
+
+    @pytest.mark.pass_test
+    @pytest.mark.positive
+    @pytest.mark.parametrize('patch_response', [{'param': User(), 'type': 'positive'}], indirect=True)
+    def test_patch_user(self, patch_response):
+        #  Функция создания позитивного patch запроса
+        Validate(response=patch_response,
+                 model=User.MODEL['patch']).validate()
+        CheckStatusCode(response=patch_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['patch']).assert_status_code()
 
 
 class TestNegativeAPI:
     """ Класс содержащий негативные тесты """
 
-    @pytest.mark.failed_test
-    @pytest.mark.negative
-    @pytest.mark.parametrize('user_case', [
-        (User().set_name(1).set_job('Python Developer').build()),
-        (User().set_name('Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr.').set_job('Python Developer').build()),
-        (User().set_name('Squirrel').set_job('Head of the sector of competitions for        \
-                                             the supply of goods, performance of work       \
-                                             and provision of services for public needs     \
-                                             of the Department of Economic Development,     \
-                                             Finance and Competitions of the Department     \
-                                             of Consumer Market and Services of the City    \
-                                             of Moscow').build()),
-        (User().set_name('Squirrel').set_job(1).build(), Link().build())
-    ])
-    def test_create_user(self, user_case):
-        """ Функция запуска теста для проверки создания нескольких отдельных пользователей с неверными данными """
-        CheckStatusCode(OpenPage(Link().build(), user_case).post_response()).assert_status_code(415)
-
-    @pytest.mark.failed_test
-    @pytest.mark.negative
-    @pytest.mark.parametrize('user_case, link', [
-        (User().set_name(1).set_job('Python Developer').build(), Link().build()),
-        (User().set_name('Ellen Georgian Ser-Lecken').set_job('Python Developer').build(), Link().build()),
-        (User().set_name('Squirrel').set_job('Head of the sector of competitions for            \
-                                                 the supply of goods, performance of work       \
-                                                 and provision of services for public needs     \
-                                                 of the Department of Economic Development,     \
-                                                 Finance and Competitions of the Department     \
-                                                 of Consumer Market and Services of the City    \
-                                                 of Moscow').build(), Link().build()),
-        (User().set_name('Squirrel').set_job('Python Developer').build(), Link().add_user('13').build()),
-        (User().set_name('Squirrel').set_job(1).build(), Link().build())
-    ])
-    def test_update_user_by_put(self, user_case, link):
-        """ Функция запуска теста для проверки обновления нескольких отдельных
-            пользователей с неверными данными с помощью метода put"""
-        CheckStatusCode(OpenPage(link, user_case).put_response()).assert_status_code(415)
-
-    @pytest.mark.failed_test
-    @pytest.mark.negative
-    @pytest.mark.parametrize('user_case, link', [
-        (User().set_name(1).set_job('Python Developer').build(), Link().build()),
-        (User().set_name('Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr.').set_job('Python Developer').build(), Link().build()),
-        (User().set_name('Squirrel').set_job('Head of the sector of competitions for            \
-                                                 the supply of goods, performance of work       \
-                                                 and provision of services for public needs     \
-                                                 of the Department of Economic Development,     \
-                                                 Finance and Competitions of the Department     \
-                                                 of Consumer Market and Services of the City    \
-                                                 of Moscow').build(), Link().build()),
-        (User().set_name('Squirrel').set_job('Python Developer').build(), Link().add_user('13').build()),
-        (User().set_name('Squirrel').set_job(1).build(), Link().build())
-    ])
-    def test_update_user_by_patch(self, user_case, link):
-        """ Функция запуска теста для проверки обновления нескольких отдельных
-              пользователей с неверными данными с помощью метода patch"""
-        CheckStatusCode(OpenPage(link, user_case).patch_response()).assert_status_code(415)
+    @pytest.mark.pass_test
+    @pytest.mark.positive
+    @pytest.mark.parametrize('get_response', [{'param': User(), 'type': 'negative'}], indirect=True)
+    def test_get_single_user(self, get_response):
+        #  Функция создания негативного get запроса
+        CheckStatusCode(response=get_response,
+                        status_code=User.STATUS_CODE_NEGATIVE_CASE['get']).assert_status_code()
 
     @pytest.mark.pass_test
-    @pytest.mark.negative
-    @pytest.mark.data(Link().add_user('13').build())
-    def test_get_unknown_single_user(self, get_response):
-        """ Функция запуска теста для проверки получения несуществующего пользователя """
-        CheckStatusCode(get_response).assert_status_code(404)
+    @pytest.mark.positive
+    @pytest.mark.parametrize('get_list_response', [{'param': User(), 'type': 'negative'}], indirect=True)
+    def test_get_list_user(self, get_list_response):
+        #  Функция создания негативного get_list запроса
+        CheckStatusCode(response=get_list_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['get']).assert_status_code()
 
-    @pytest.mark.failed_test
-    @pytest.mark.negative
-    @pytest.mark.data(Link().add_param('page', '3').build())
-    def test_get_users_list(self, get_response):
-        """ Функция запуска теста для проверки получения списка пользователей на несуществующей странице """
-        CheckStatusCode(get_response).assert_status_code(404)
-
-    @pytest.mark.failed_test
-    @pytest.mark.negative
-    @pytest.mark.data(Link().add_user('13').build())
+    @pytest.mark.pass_test
+    @pytest.mark.positive
+    @pytest.mark.parametrize('delete_response', [{'param': User(), 'type': 'negative'}], indirect=True)
     def test_delete_user(self, delete_response):
-        """ Функция запуска теста для проверки удаления несуществующего пользователя """
-        CheckStatusCode(delete_response).assert_status_code(404)
+        #  Функция создания негативного delete запроса
+        CheckStatusCode(response=delete_response,
+                        status_code=User.STATUS_CODE_POSITIVE_CASE['delete']).assert_status_code()
+
+    @pytest.mark.failed_test
+    @pytest.mark.negative
+    @pytest.mark.parametrize('post_response', [{'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_first'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_second'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_third'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_fourth'], 'type': 'negative'}], indirect=True)
+    def test_post_user(self, post_response):
+        #  Функция создания негативного post запроса
+        CheckStatusCode(response=post_response, status_code=User.STATUS_CODE_NEGATIVE_CASE['post']).assert_status_code()
+
+    @pytest.mark.failed_test
+    @pytest.mark.negative
+    @pytest.mark.parametrize('put_response', [{'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_first'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_second'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_third'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_fourth'], 'type': 'negative'}], indirect=True)
+    def test_put_user(self, put_response):
+        #  Функция создания негативного put запроса
+        CheckStatusCode(response=put_response, status_code=User.STATUS_CODE_NEGATIVE_CASE['put']).assert_status_code()
+
+    @pytest.mark.failed_test
+    @pytest.mark.negative
+    @pytest.mark.parametrize('patch_response', [{'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_first'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_second'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_third'], 'type': 'negative'},
+                                               {'param': User(), 'json': User.JSON_NEGATIVE_CASE['wrong_user_fourth'], 'type': 'negative'}], indirect=True)
+    def test_patch_user(self, patch_response):
+        #  Функция создания негативного patch запроса
+        CheckStatusCode(response=patch_response, status_code=User.STATUS_CODE_NEGATIVE_CASE['patch']).assert_status_code()

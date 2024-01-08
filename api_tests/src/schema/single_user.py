@@ -35,6 +35,6 @@ class Support(BaseModel):
             raise ValueError('Url dose not found')
 
 
-class Users(BaseModel):
+class SingleUser(BaseModel):
     data: Data
     support: Support
